@@ -22,6 +22,19 @@ def create_app():
     async def abort():
         return await focus_arduino.abort()
     
+    @app.route('/api/absvoltage')
+    async def move_absolute():
+        new_voltage = int(request.args.get('absvoltage', 0))
+        resp = focus_arduino.move_absolute(new_voltage)
+        return resp
+    #possibly have it move slowly
+    
+    @app.route('/api/adjvoltage')
+    async def move_relative():
+        new_voltage = int(request.args.get('adjvoltage', 0))
+        resp = focus_arduino.move_relative(new_voltage)
+        return resp
+    
     return app
 
 

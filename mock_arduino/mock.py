@@ -55,11 +55,15 @@ class focus_arduino:
     
     @classmethod
     def move_absolute(cls, voltage):
-        pass
+        cls.voltage = voltage
+        return jsonify({"code": 200})
+        
 
     @classmethod
     def move_relative(cls, voltage):
-        pass
+        cls.voltage += voltage
+        return jsonify({"code": 200})
+    
 
     @classmethod
     def home(cls):
