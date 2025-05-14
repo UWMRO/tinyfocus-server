@@ -24,6 +24,19 @@ def create_app():
         resp = focus_arduino.abort()
         return resp
     
+    @app.route('/api/absvoltage')
+    async def move_absolute():
+        new_voltage = int(request.args.get('absvoltage', 0))
+        resp = focus_arduino.move_absolute(new_voltage)
+        return resp
+    #possibly have it move slowly
+    
+    @app.route('/api/adjvoltage')
+    async def move_relative():
+        new_voltage = int(request.args.get('adjvoltage', 0))
+        resp = focus_arduino.move_relative(new_voltage)
+        return resp
+    
     return app
 
 
@@ -44,5 +57,4 @@ if __name__ == '__main__':
     else:
         # we need to figure out how to actually communicate with the arduino
         pass
-
     app.run(host='127.0.0.1', port=port, debug=True, processes=1, threaded=True)
