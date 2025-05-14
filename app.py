@@ -1,5 +1,6 @@
 from flask import Flask, request
 import argparse
+import logging
 
 def create_app():
     app = Flask(__name__)
@@ -9,20 +10,17 @@ def create_app():
         return 'Tiny Focus Server is running!'
 
     @app.route('/api/status')
-    def status():
-        resp = focus_arduino.status()
-        return resp
+    async def status():
+        return await focus_arduino.status()
     
     @app.route('/api/move')
     async def move():
         num_steps = int(request.args.get('steps', 0))
-        resp = await focus_arduino.move_steps(num_steps)
-        return resp
+        return await focus_arduino.move_steps(num_steps)
     
     @app.route('/api/abort')
-    def abort():
-        resp = focus_arduino.abort()
-        return resp
+    async def abort():
+        return await focus_arduino.abort()
     
     @app.route('/api/absvoltage')
     async def move_absolute():
@@ -43,6 +41,8 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
     parser = argparse.ArgumentParser(description='Tiny Focus Server')
     parser.add_argument('-p', '--port', type=int, default=5000, help='Port number to run the server on')
     parser.add_argument('-d', '--debug', action='store_true', help='Use the mock Arduino for testing')
@@ -52,9 +52,9 @@ if __name__ == '__main__':
     app.debug = args.debug
 
     if args.debug:
-        print("Debug mode is enabled. Using mock Arduino.")
+        logging.debug("Debug mode is enabled. Using mock Arduino.")
         from mock_arduino.mock import focus_arduino
     else:
-        # we need to figure out how to actually communicate with the arduino
-        pass
+        from tinyfocus.arduino_connection import focus_arduino
+
     app.run(host='127.0.0.1', port=port, debug=True, processes=1, threaded=True)
