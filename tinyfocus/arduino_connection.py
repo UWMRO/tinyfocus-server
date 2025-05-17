@@ -8,7 +8,7 @@ class focus_arduino:
 
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    IP_ADDRESS = "192.168.1.11"
+    IP_ADDRESS = "72.233.250.86"
     PORT = "80"
 
     address = f"http://{IP_ADDRESS}:{PORT}"
@@ -33,6 +33,7 @@ class focus_arduino:
                 except Exception as e:
                     logging.error(f"Error: Failed to parse JSON response - {e}")
                     return {"error": "Failed to parse JSON response"}
+        return {"error": "Unexpected failure"}
 
     @classmethod
     async def __getRequestToResponse(cls, endpoint):
@@ -54,6 +55,7 @@ class focus_arduino:
                 except Exception as e:
                     logging.error(f"Error: Failed to parse JSON response - {e}")
                     return {"error": "Failed to parse JSON response"}
+        return {"error": "Unexpected failure"}
 
     @classmethod
     async def status(cls):
