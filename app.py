@@ -35,6 +35,10 @@ def create_app():
         resp = focus_arduino.move_relative(new_voltage)
         return resp
     
+    @app.route('/api/gohome')
+    async def go_home():
+        return focus_arduino.go_home()
+        
     return app
 
 

@@ -9,6 +9,8 @@ class focus_arduino:
 
     # step position of the motor
     position = 0
+    # home position and voltage of the motor
+    home = (0, 0)
     # voltage readout of the potentiometer
     voltage = 0
     # the upper and lower limits of the motor in steps (need to evaluate if this should be voltage instead)
@@ -58,13 +60,17 @@ class focus_arduino:
         cls.voltage = voltage
         return jsonify({"code": 200})
         
-
     @classmethod
     def move_relative(cls, voltage):
         cls.voltage += voltage
         return jsonify({"code": 200})
     
-
     @classmethod
-    def home(cls):
+    def go_home(cls):
+        home_pos, home_vol = cls.home
+        num_steps = home_pos - cls.position
+        cls.move_absolute(home_vol)
+        cls.move_steps(num_steps)
+        # idk if this part is necissary im just doing it because its on the other ones
+        return jsonify({"code": 200})
         pass
