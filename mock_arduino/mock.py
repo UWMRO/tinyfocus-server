@@ -22,7 +22,7 @@ class focus_arduino:
     # https://docs.google.com/document/d/18srtLU6njw8gjQcMVPEmYDES0dOmodDcjzHt4GefPW0/edit?tab=t.0
 
     @classmethod
-    def status(cls):
+    async def status(cls):
         return jsonify({
             "moving": cls.moving,
             "voltage": cls.voltage,
@@ -49,22 +49,22 @@ class focus_arduino:
         return jsonify({"code": 200})
 
     @classmethod
-    def abort(cls):
+    async def abort(cls):
         cls.moving = False
         return jsonify({"code": 200})
     
     @classmethod
-    def move_absolute(cls, voltage):
+    async def move_absolute(cls, voltage):
         cls.voltage = voltage
         return jsonify({"code": 200})
         
 
     @classmethod
-    def move_relative(cls, voltage):
+    async def move_relative(cls, voltage):
         cls.voltage += voltage
         return jsonify({"code": 200})
     
 
     @classmethod
-    def home(cls):
+    async def home(cls):
         pass
