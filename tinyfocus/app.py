@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import re
 from contextlib import asynccontextmanager
 
 from typing import Annotated, AsyncIterator
@@ -37,7 +38,20 @@ def ping():
 async def status():
     """Get the current status of the focus motor."""
 
-    return await focus_arduino.status()
+    response = await focus_arduino.status()
+
+    if "ERROR" in response:
+        return {"error": True, "code": int(response.split("-")[1].strip())}
+
+    match = re.match(r"OK - moving:(\d),step:(-?\d+),limit:(\d)", response.strip())
+    if match:
+        moving = bool(int(match.group(1)))
+        step = int(match.group(2))
+        limit = bool(int(match.group(3)))
+
+        return {"error": False, "moving": moving, "step": step, "limit": limit}
+
+    return {"error": True, "code": 999}
 
 
 @app.get(
