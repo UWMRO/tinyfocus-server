@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import aiohttp
 
-from .app import logger
+from . import logger
 
 
 IP_ADDRESS = "72.233.250.86"

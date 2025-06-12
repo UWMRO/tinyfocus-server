@@ -6,7 +6,6 @@
 
 from __future__ import annotations
 
-import logging
 from contextlib import asynccontextmanager
 
 from typing import Annotated, AsyncIterator
@@ -14,9 +13,6 @@ from typing import Annotated, AsyncIterator
 from fastapi import FastAPI, Path
 
 from tinyfocus.arduino_connection import FocusArduinoConnection
-
-
-logger = logging.getLogger("uvicorn.error")
 
 
 @asynccontextmanager
