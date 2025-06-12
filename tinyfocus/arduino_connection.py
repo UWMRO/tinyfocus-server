@@ -1,80 +1,101 @@
-import logging
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# @Filename: arduino_connection.py
+# @License: BSD 3-clause (http://www.opensource.org/licenses/BSD-3-Clause)
+
+from __future__ import annotations
+
 import aiohttp
 
-class focus_arduino:
-    """
-    A connection to the focuser arduino. It connects and calls the real arduino.
-    """
+from .app import logger
 
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    IP_ADDRESS = "72.233.250.86"
-    PORT = "80"
+IP_ADDRESS = "72.233.250.86"
+PORT = "80"
 
-    address = f"http://{IP_ADDRESS}:{PORT}"
 
-    @classmethod
-    async def __postRequestToResponse(cls, endpoint):
+class FocusArduinoConnection:
+    """A connection to the focuser arduino. It connects and calls the real arduino."""
+
+    def __init__(self):
+        self.address = f"http://{IP_ADDRESS}:{PORT}"
+
+    async def __postRequestToResponse(self, endpoint):
+        """Sends a POST request to the Arduino and return the response.
+
+        :param endpoint: The endpoint to send the request to.
+                         Include any query parameters in the URL.
+        :return: The JSON response from the Arduino,
+                 or {"error": message, "code": code} if the request fails.
+
         """
-        Sends a POST request to the Arduino and return the response.
-        
-        :param endpoint: The endpoint to send the request to. Include any query parameters in the URL.
-        :return: The JSON response from the Arduino, or {"error": message, "code": code} if the request fails.
-        """
-        logging.debug(f"Requesting {cls.address}/{endpoint}")
+
+        logger.debug(f"Requesting {self.address}/{endpoint}")
+
         async with aiohttp.ClientSession() as session:
-            async with session.post(f"{cls.address}/{endpoint}") as resp:
+            async with session.post(f"{self.address}/{endpoint}") as resp:
                 if resp.status != 200:
-                    logging.error(f"Error: HTTP Request failed with code {resp.status} - {await resp.text()}")
+                    message = await resp.text()
+                    logger.error(
+                        f"Error: HTTP Request failed with code "
+                        f"{resp.status} - {message}"
+                    )
                     return {"error": "HTTP Request failed", "code": resp.status}
                 try:
-                    logging.debug(f"Response: {await resp.text()}")
+                    logger.debug(f"Response: {await resp.text()}")
                     return await resp.json(content_type=None)
                 except Exception as e:
-                    logging.error(f"Error: Failed to parse JSON response - {e}")
-                    return {"error": "Failed to parse JSON response", "code": resp.status}
+                    logger.error(f"Error: Failed to parse JSON response - {e}")
+                    return {
+                        "error": "Failed to parse JSON response",
+                        "code": resp.status,
+                    }
 
-    @classmethod
-    async def __getRequestToResponse(cls, endpoint):
+    async def __getRequestToResponse(self, endpoint):
+        """Sends a GET request to the Arduino and return the response.
+
+        :param endpoint: The endpoint to send the request to.
+                         Include any query parameters in the URL.
+        :return: The JSON response from the Arduino,
+                 or {"error": message, "code": code} if the request fails.
         """
-        Sends a GET request to the Arduino and return the response.
-        
-        :param endpoint: The endpoint to send the request to. Include any query parameters in the URL.
-        :return: The JSON response from the Arduino, or {"error": message, "code": code} if the request fails.
-        """
-        logging.debug(f"Requesting {cls.address}/{endpoint}")
+
+        logger.debug(f"Requesting {self.address}/{endpoint}")
+
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"{cls.address}/{endpoint}") as resp:
+            async with session.get(f"{self.address}/{endpoint}") as resp:
                 if resp.status != 200:
-                    logging.error(f"Error: HTTP Request failed with code {resp.status} - {await resp.text()}")
+                    message = await resp.text()
+                    logger.error(
+                        f"Error: HTTP Request failed with code "
+                        f"{resp.status} - {message}"
+                    )
                     return {"error": "HTTP Request failed", "code": resp.status}
                 try:
-                    logging.debug(f"Response: {await resp.text()}")
+                    logger.debug(f"Response: {await resp.text()}")
                     return await resp.json(content_type=None)
                 except Exception as e:
-                    logging.error(f"Error: Failed to parse JSON response - {e}")
-                    return {"error": "Failed to parse JSON response", "code": resp.status}
+                    logger.error(f"Error: Failed to parse JSON response - {e}")
+                    return {
+                        "error": "Failed to parse JSON response",
+                        "code": resp.status,
+                    }
 
-    @classmethod
-    async def status(cls):
-        return await cls.__getRequestToResponse("status")
-    
-    @classmethod
-    async def move_steps(cls, num_steps):
-        return await cls.__postRequestToResponse(f"move?steps={num_steps}")
+    async def status(self):
+        return await self.__getRequestToResponse("status")
 
-    @classmethod
-    async def abort(cls):
-        return await cls.__postRequestToResponse("abort")
-    
-    @classmethod
-    async def move_absolute(cls, voltage):
-        return await cls.__postRequestToResponse(f"set?voltage={voltage}")
+    async def move_steps(self, num_steps: int):
+        return await self.__postRequestToResponse(f"move?steps={num_steps}")
 
-    @classmethod
-    async def move_relative(cls, voltage):
-        return await cls.__postRequestToResponse(f"move?voltage={voltage}")
+    async def abort(self):
+        return await self.__postRequestToResponse("abort")
 
-    @classmethod
-    async def home(cls):
-        return await cls.__postRequestToResponse("home")
+    async def move_absolute(self, voltage):
+        return await self.__postRequestToResponse(f"set?voltage={voltage}")
+
+    async def move_relative(self, voltage):
+        return await self.__postRequestToResponse(f"move?voltage={voltage}")
+
+    async def home(self):
+        return await self.__postRequestToResponse("home")

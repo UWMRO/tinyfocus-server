@@ -1,20 +1,27 @@
-from flask import jsonify
 import asyncio
 
+from flask import jsonify
+
+
 class focus_arduino:
-    """
-    A mock for the focuser arduino. It simulates what will be returned from the actual arduino so that
+    """A mock for the focuser arduino.
+
+    It simulates what will be returned from the actual arduino so that
     we can test the server without needing to have the actual arduino connected.
+
     """
 
     # step position of the motor
     position = 0
+
     # voltage readout of the potentiometer
     voltage = 0
-    # the upper and lower limits of the motor in steps (need to evaluate if this should be voltage instead)
-    # also possible that this is just arbitrary, so idk.
+
+    # the upper and lower limits of the motor in steps (need to evaluate if
+    # this should be voltage instead) also possible that this is just arbitrary, so idk.
     up_limit = 100
     down_limit = -100
+
     # whether the motor is currently moving
     moving = False
 
@@ -23,18 +30,24 @@ class focus_arduino:
 
     @classmethod
     async def status(cls):
-        return jsonify({
-            "moving": cls.moving,
-            "voltage": cls.voltage,
-            "limit": cls.position >= cls.up_limit or cls.position <= cls.down_limit,
-            "step": cls.position,
-        })
-    
+        return jsonify(
+            {
+                "moving": cls.moving,
+                "voltage": cls.voltage,
+                "limit": cls.position >= cls.up_limit or cls.position <= cls.down_limit,
+                "step": cls.position,
+            }
+        )
+
     @classmethod
     async def move_steps(cls, num_steps):
         cls.moving = True
         for _ in range(abs(num_steps)):
-            if not cls.moving or cls.position > cls.up_limit or cls.position < cls.down_limit:
+            if (
+                not cls.moving
+                or cls.position > cls.up_limit
+                or cls.position < cls.down_limit
+            ):
                 if cls.position > cls.up_limit:
                     cls.position = cls.up_limit
                 elif cls.position < cls.down_limit:
@@ -52,18 +65,16 @@ class focus_arduino:
     async def abort(cls):
         cls.moving = False
         return jsonify({"code": 200})
-    
+
     @classmethod
     async def move_absolute(cls, voltage):
         cls.voltage = voltage
         return jsonify({"code": 200})
-        
 
     @classmethod
     async def move_relative(cls, voltage):
         cls.voltage += voltage
         return jsonify({"code": 200})
-    
 
     @classmethod
     async def home(cls):
