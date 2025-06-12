@@ -12,7 +12,7 @@ from typing import Annotated, AsyncIterator
 
 from fastapi import FastAPI, Path
 
-from tinyfocus.arduino_connection import FocusArduinoConnection
+from tinyfocus.arduino_serial import FocusArduinoConnection
 
 
 @asynccontextmanager
@@ -53,10 +53,3 @@ async def move(
     """Move the focus motor by a specified number of steps."""
 
     return await focus_arduino.move_steps(steps)
-
-
-@app.get("/abort", description="Abort the current movement of the focus motor.")
-async def abort():
-    """Abort the current movement of the focus motor."""
-
-    return await focus_arduino.abort()
