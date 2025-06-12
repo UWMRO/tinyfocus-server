@@ -31,7 +31,7 @@ class FocusArduinoConnection:
 
         """
 
-        logger.debug(f"Requesting {self.address}/{endpoint}")
+        logger.info(f"Requesting {self.address}/{endpoint}")
 
         async with aiohttp.ClientSession() as session:
             async with session.post(f"{self.address}/{endpoint}") as resp:
@@ -61,7 +61,7 @@ class FocusArduinoConnection:
                  or {"error": message, "code": code} if the request fails.
         """
 
-        logger.debug(f"Requesting {self.address}/{endpoint}")
+        logger.info(f"Requesting {self.address}/{endpoint}")
 
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{self.address}/{endpoint}") as resp:
