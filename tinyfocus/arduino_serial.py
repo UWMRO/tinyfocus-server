@@ -36,6 +36,6 @@ class FocusArduinoConnection:
             response = self.serial.readline()
             if response.decode() == "":
                 continue
-            return response
+            return response.decode()
 
         return "ERROR"

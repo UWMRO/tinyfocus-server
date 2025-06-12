@@ -66,4 +66,9 @@ async def move(
 ):
     """Move the focus motor by a specified number of steps."""
 
-    return await focus_arduino.move_steps(steps)
+    response = await focus_arduino.move_steps(steps)
+
+    if "ERROR" in response:
+        return {"error": True, "code": int(response.split("-")[1].strip())}
+
+    return {"error": False}
